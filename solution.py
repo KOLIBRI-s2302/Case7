@@ -166,5 +166,25 @@ def main():
     sorted_products = sorted(all_products, key=get_price_number)
     print(*sorted_products, sep='\n', end='\n')
 
-if __name__ == '__main__':
+    with open('products_data.txt', 'w', encoding='utf-8') as txt_file:
+        txt_file.write("РЕЗУЛЬТАТЫ ПОИСКА\n")
+        txt_file.write("=" * 50 + "\n")
+        txt_file.write(f"Поисковый запрос: {search_query}\n")
+        txt_file.write(f"Найдено товаров: {len(sorted_products)}\n")
+        txt_file.write("=" * 50 + "\n\n")
+
+        for i, product in enumerate(sorted_products, 1):
+            txt_file.write(f"ТОВАР #{i}:\n")
+            txt_file.write(f"  Название: {product['Name']}\n")
+            txt_file.write(f"  Артикул: {product.get('Article')}\n")
+            txt_file.write(f"  Цена: {product['Price']}\n")
+            txt_file.write(f"  Цвет: {product['Colour']}\n")
+            txt_file.write(f"  Тип обуви: {product['Type of shoes']}\n")
+            txt_file.write(f"  Сезон: {product['Season']}\n")
+            txt_file.write(f"  Размеры: {product['Sizes']}\n")
+            txt_file.write(f"  Материал верха: {product['Upper material']}\n")
+            txt_file.write(f"  Страна производства: {product['Country of origin']}\n")
+            txt_file.write("-" * 50 + "\n\n")
+
+if __name__ == '__solution__':
     main()
