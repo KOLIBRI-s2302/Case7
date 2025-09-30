@@ -1,79 +1,170 @@
-# Case №2
-# Developers: Shatalov Alexander, Kachkin Denis, Svilin Andrey
-#
+import requests
+import bs4
+import time
+import locale as loc
 
-import local as loc
-
+'''
+    :param: product_url it is a Product page URL
+        
+    :Returns: Product info like name, price, color, etc.
+        If data not found, value is 'Not found'
+'''
 def main():
-  """
-  Main function.
-  :return: None
-  """
-  base_utility = 1000
-  print(loc.CHOOSE_YOUR_SEX)
-  print(loc.MALE, loc.FEMALE, '|' ,loc.PRINT_NUMBER)
-  sex=int(input())
-  if sex == 1:
-    base_utility *= 1
-  else:
-    base_utility *= 0.7
+    def parsing(product_url):
+        response = requests.get(product_url)
+        soup = bs4.BeautifulSoup(response.text, 'html.parser')
+        product_data = {
+            'Name': None,
+            'Type of shoes': None,
+            'Season': None,
+            'Price': None,
+            'Sizes': None,
+            'Upper material': None,
+            'Colour': None,
+            'Country of origin': None
+        }
 
-  print(loc.CHOOSE_YOUR_AGE_PERIOD)
-  print('1) 18-30', '2) 31-45', '3) 46-60','4) 60+', '|' ,loc.PRINT_NUMBER)
-  age_period=int(input())
-  if age_period == 1:
-    base_utility *= 1
-  elif age_period == 2:
-    base_utility *= 0.8
-  elif age_period == 3:
-    base_utility *= 0.6
-  else:
-    base_utility *= 0.4
+        # Name
+        name = soup.find('h1')
+        if name:
+            product_data['Name'] = name.text.strip()
+        else:
+            product_data['Name'] = 'Not found'
 
-  print(loc.CHOOSE_YOUR_HEALTH_STATUS)
-  print(loc.HEALTHY, loc.CHRONIC_DISEASES, loc.INVALID, '|' ,loc.PRINT_NUMBER)
-  health_status=int(input())
-  if health_status == 1:
-    base_utility *= 1
-  elif health_status == 2:
-    base_utility *= 0.7
-  else:
-    base_utility *= 0.3
+        # Colour
 
-  print(loc.CHOOSE_YOUR_FAMILY_STATUS, '|' ,loc.PRINT_NUMBER)
-  print(loc.LONELY, loc.FAMILY)
-  family_status=int(input())
-  if family_status == 1:
-    base_utility *= 1
-  else:
-    base_utility *= 1.5
+        color_title = soup.find('div', class_='param-title', string=loc.MAIN_COLOUR)
+        if color_title:
+            color_value = color_title.find_next_sibling('div', class_='param-body')
+            if color_value:
+                product_data['Colour'] = color_value.text.strip()
+        else:
+            product_data['Colour'] = 'Not found'
 
-  print(loc.CHOOSE_YOUR_SKILLS)
-  print(loc.NONE, loc.FARMER, loc.CRAFTSMAN, loc.ARTIST, '|', loc.PRINT_NUMBER)
-  skill=int(input())
-  if skill == 1:
-    base_utility *= 0.8
-  if skill == 2:
-    base_utility *= 1
-  if skill == 3:
-    base_utility *= 1.2
-  if skill == 4:
-    base_utility *= 2.5
+        # Type of shoes
+        type_of_shoe_title = soup.find('div', class_='param-title', string=loc.TYPE_OF_SHOE)
+        if type_of_shoe_title:
+            type_of_shoe_value = type_of_shoe_title.find_next_sibling('div', class_='param-body')
+            if type_of_shoe_value:
+                product_data['Type of shoes'] = type_of_shoe_value.text.strip()
+        else:
+            product_data['Type of shoes'] = 'Not found'
 
-  print(loc.CHOOSE_YOUR_REGION)
-  print(loc.POOR, loc.USUAL, loc.FERTILE, '|', loc.PRINT_NUMBER)
-  region=int(input())
-  if region == 1:
-    base_utility *= 0.8
-  elif region == 2:
-    base_utility *= 1
-  else:
-    base_utility *= 1.2
+        # SEASON
+        season_title = soup.find('div', class_='param-title', string=loc.SEASON)
+        if season_title:
+            season_value = season_title.find_next_sibling('div', class_='param-body')
+            if season_value:
+                product_data['Season'] = season_value.text.strip()
+        else:
+            product_data['Season'] = 'Not found'
 
-  bread_quantity = base_utility // 0.23
-  print(loc.YOUR_PRICE_IS, int(base_utility), loc.RUBLES)
-  print(loc.YOUR_PRICE_IS_EQUAL_TO, int(bread_quantity), loc.LOAFS_OF_BREAD)
+        # Sizes
+        size_title = soup.find('div', class_='param-title', string=loc.SIZE)
+        if size_title:
+            size_value = size_title.find_next_sibling('div', class_='param-body')
+            if size_value:
+                product_data['Sizes'] = size_value.text.strip()
+        else:
+            product_data['Sizes'] = 'Not found'
 
+
+        # Upper material
+        upper_material_title = soup.find('div', class_='param-title', string=loc.UPPER_MATERIAL)
+        if upper_material_title:
+            upper_material_value = upper_material_title.find_next_sibling('div', class_='param-body')
+            if upper_material_value:
+                product_data['Upper material'] = upper_material_value.text.strip()
+        else:
+            product_data['Upper material'] = 'Not found'
+
+
+        # Country_of_origin
+        country_of_origin_title = soup.find('div', class_='param-title', string=loc.COUNTRY_OF_ORIGIN)
+        if country_of_origin_title:
+            country_of_origin_value = country_of_origin_title.find_next_sibling('div', class_='param-body')
+            if country_of_origin_value:
+                product_data['Country of origin'] = country_of_origin_value.text.strip()
+        else:
+            product_data['Country of origin'] = 'Not found'
+
+        # Article
+        article_span = soup.find('span', string=loc.ARTICLE)
+        if article_span:
+            article_text = article_span.next_sibling
+            if article_text:
+                product_data['Article'] = article_text.strip()
+        else:
+            product_data['Article'] = 'Not found'
+
+        # Price
+        price = soup.find('div', class_='price-current')
+        if price:
+            strong_tag = price.find('strong')
+            if strong_tag:
+                product_data['Price'] = strong_tag.text.strip()
+        else:
+            product_data['Price'] = 'Not found'
+
+        return product_data
+
+
+    '''
+        :param: product it is a dictionary with product data. Have 'Price' key
+        :Returns:
+            int: Price as number without spaces, or 0 if price is missing/invalid
+            '''
+
+    def get_price_number(product):
+        if product['Price']:
+            try:
+                return int(product['Price'].replace(' ', ''))
+            except:
+                return 0
+        return 0
+
+    url = 'https://obuv-tut2000.ru/magazin/search'
+    search_query = input("Введите поисковый запрос: ")
+
+    page = 0
+    all_links = set()
+
+    while True:
+        page_links = []
+        response = requests.get(url, params={
+            'p': page,
+            'gr_smart_search': 1,
+            'search_text': search_query
+        })
+
+        soup = bs4.BeautifulSoup(response.text, features='html.parser')
+        all_forms = soup.find_all(name='form', method='post')
+
+        for form in all_forms:
+            links = form.find_all('a')
+            for link in links:
+                if 'product' in link['href']:
+                    full_url = link['href']
+                    if full_url.startswith('/'):
+                        full_url = 'https://obuv-tut2000.ru' + full_url
+                    all_links.add(full_url)
+                    page_links.append(full_url)
+
+        if not page_links:
+            break
+
+        page += 1
+        time.sleep(2)
+
+    all_products = []
+
+    for product_url in all_links:
+        product_data = parsing(product_url)
+        all_products.append(product_data)
+        time.sleep(2)
+
+    sorted_products = sorted(all_products, key=get_price_number)
+    print(*sorted_products, sep='\n', end='\n')
 
 if __name__ == '__main__':
-  main()
+    main()
