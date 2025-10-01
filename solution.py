@@ -1,3 +1,6 @@
+#Case 7
+#Developers: Shatalov Alexander, Svilin Andrey, Haidukhov Stepan 
+
 import requests
 import bs4
 import time
@@ -10,6 +13,8 @@ import locale as loc
         If data not found, value is 'Not found'
 '''
 def main():
+
+    
     def parsing(product_url):
         response = requests.get(product_url)
         soup = bs4.BeautifulSoup(response.text, 'html.parser')
@@ -115,6 +120,7 @@ def main():
             int: Price as number without spaces, or 0 if price is missing/invalid
             '''
 
+    
     def get_price_number(product):
         if product['Price']:
             return int(product['Price'])
@@ -151,6 +157,7 @@ def main():
         if not page_links:
             break
 
+        
         page += 1
 
     all_products = []
@@ -175,6 +182,7 @@ def main():
             txt_file.write(f"  Материал верха: {product['Upper material']}\n")
             txt_file.write(f"  Страна производства: {product['Country of origin']}\n")
             txt_file.write("\n\n")
+
 
 if __name__ == '__main__':
     main()
