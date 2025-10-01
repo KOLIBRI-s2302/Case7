@@ -6,16 +6,17 @@ import bs4
 import time
 import locale as loc
 
-'''
-    :param: product_url it is a Product page URL
-        
-    :Returns: Product info like name, price, color, etc.
-        If data not found, value is 'Not found'
-'''
 def main():
 
     
     def parsing(product_url):
+    '''
+    :param: product_url it is a Product page URL
+        
+    :Returns: Product info like name, price, color, etc.
+        If data not found, value is 'Not found'
+    '''
+    
         response = requests.get(product_url)
         soup = bs4.BeautifulSoup(response.text, 'html.parser')
         product_data = {
@@ -113,15 +114,14 @@ def main():
 
         return product_data
 
-
-    '''
+    
+    def get_price_number(product):   
+        '''
         :param: product it is a dictionary with product data. Have 'Price' key
         :Returns:
             int: Price as number without spaces, or 0 if price is missing/invalid
-            '''
-
-    
-    def get_price_number(product):
+        '''
+        
         if product['Price']:
             return int(product['Price'])
 
