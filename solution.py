@@ -117,10 +117,8 @@ def main():
 
     def get_price_number(product):
         if product['Price']:
-            try:
-                return int(product['Price'].replace(' ', ''))
-            except:
-                return 0
+            return int(product['Price'])
+
         return 0
 
     url = 'https://obuv-tut2000.ru/magazin/search'
@@ -154,7 +152,6 @@ def main():
             break
 
         page += 1
-        time.sleep(2)
 
     all_products = []
 
@@ -164,17 +161,10 @@ def main():
         time.sleep(2)
 
     sorted_products = sorted(all_products, key=get_price_number)
-    print(*sorted_products, sep='\n', end='\n')
 
     with open('products_data.txt', 'w', encoding='utf-8') as txt_file:
-        txt_file.write("РЕЗУЛЬТАТЫ ПОИСКА\n")
-        txt_file.write("=" * 50 + "\n")
-        txt_file.write(f"Поисковый запрос: {search_query}\n")
-        txt_file.write(f"Найдено товаров: {len(sorted_products)}\n")
-        txt_file.write("=" * 50 + "\n\n")
 
-        for i, product in enumerate(sorted_products, 1):
-            txt_file.write(f"ТОВАР #{i}:\n")
+        for product in sorted_products:
             txt_file.write(f"  Название: {product['Name']}\n")
             txt_file.write(f"  Артикул: {product.get('Article')}\n")
             txt_file.write(f"  Цена: {product['Price']}\n")
@@ -184,7 +174,7 @@ def main():
             txt_file.write(f"  Размеры: {product['Sizes']}\n")
             txt_file.write(f"  Материал верха: {product['Upper material']}\n")
             txt_file.write(f"  Страна производства: {product['Country of origin']}\n")
-            txt_file.write("-" * 50 + "\n\n")
+            txt_file.write("\n\n")
 
-if __name__ == '__solution__':
+if __name__ == '__main__':
     main()
